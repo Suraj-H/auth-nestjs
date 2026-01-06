@@ -16,11 +16,12 @@ import { ActiveUserData } from '../interfaces/active-user-data.interface';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { SignInDto } from './dto/sign-in.dto';
 import { SignUpDto } from './dto/sign-up.dto';
-import { RefreshTokenIdsStorage } from './storage/refresh-token-ids.storage';
 import {
   ExpiredRefreshTokenError,
   InvalidatedRefreshTokenError,
 } from './errors/refresh-token-error';
+import { OtpAuthenticationService } from './otp-authentication.service';
+import { RefreshTokenIdsStorage } from './storage/refresh-token-ids.storage';
 
 @Injectable()
 export class AuthenticationService {
@@ -31,6 +32,7 @@ export class AuthenticationService {
     @Inject(jwtConfig.KEY)
     private readonly jwtConfiguration: ConfigType<typeof jwtConfig>,
     private readonly refreshTokenIdsStorage: RefreshTokenIdsStorage,
+    private readonly otpAuthenticationService: OtpAuthenticationService,
   ) {}
 
   async signUp(signUpDto: SignUpDto) {
@@ -62,6 +64,16 @@ export class AuthenticationService {
     );
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials');
+    }
+
+    if (user.isTfaEnabled && signInDto.tfaCode) {
+      const is2faValid = this.otpAuthenticationService.verifyToken(
+        user.tfaSecret,
+        signInDto.tfaCode,
+      );
+      if (!is2faValid) {
+        throw new UnauthorizedException('Invalid 2FA code');
+      }
     }
 
     return await this.generateTokens(user);

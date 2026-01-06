@@ -10,6 +10,7 @@ import { AuthenticationService } from './authentication/authentication.service';
 import { AccessTokenGuard } from './authentication/guards/access-token.guard';
 import { ApiKeyGuard } from './authentication/guards/api-key.guard';
 import { AuthenticationGuard } from './authentication/guards/authentication.guard';
+import { OtpAuthenticationService } from './authentication/otp-authentication.service';
 import { GoogleAuthenticationController } from './authentication/social/google-authentication.controller';
 import { GoogleAuthenticationService } from './authentication/social/google-authentication.service';
 import { RefreshTokenIdsStorage } from './authentication/storage/refresh-token-ids.storage';
@@ -55,6 +56,7 @@ import { HashingService } from './hashing/hashing.service';
     RefreshTokenIdsStorage,
     ApiKeyService,
     GoogleAuthenticationService,
+    OtpAuthenticationService,
   ],
   controllers: [AuthenticationController, GoogleAuthenticationController],
 })

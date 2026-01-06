@@ -1,4 +1,14 @@
-import { IsEmail, IsNotEmpty, IsString, Matches, MaxLength, MinLength } from "class-validator";
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsNumberString,
+  IsOptional,
+  IsString,
+  Length,
+  Matches,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 
 export class SignInDto {
   @IsString()
@@ -18,4 +28,12 @@ export class SignInDto {
     },
   )
   readonly password: string;
+
+  @IsOptional()
+  @IsNumberString()
+  @Length(6, 6)
+  @Matches(/^\d{6}$/, {
+    message: 'tfaCode must be a 6 digit code',
+  })
+  readonly tfaCode?: string;
 }

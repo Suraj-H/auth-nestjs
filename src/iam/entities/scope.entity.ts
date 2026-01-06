@@ -14,10 +14,10 @@ export class Scope {
   id: number;
 
   @Column({
-    unique: true,
     type: 'varchar',
     enum: ScopeType,
     default: ScopeType.READ,
+    unique: true,
   })
   scope: string;
 

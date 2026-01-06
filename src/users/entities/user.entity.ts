@@ -13,13 +13,13 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   name: string;
 
-  @Column({ unique: true })
+  @Column({ type: 'varchar', unique: true })
   email: string;
 
-  @Column({ select: false, nullable: true })
+  @Column({ type: 'varchar', select: false, nullable: true })
   password: string;
 
   @Column({ type: 'varchar', enum: Role, default: Role.USER })
@@ -29,6 +29,12 @@ export class User {
   @OneToMany(() => ApiKey, (apiKey) => apiKey.user)
   apiKeys: ApiKey[];
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   googleId: string;
+
+  @Column({ type: 'boolean', default: false })
+  isTfaEnabled: boolean;
+
+  @Column({ nullable: true })
+  tfaSecret: string;
 }

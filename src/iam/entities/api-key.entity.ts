@@ -14,7 +14,7 @@ export class ApiKey {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ unique: true })
+  @Column({ type: 'varchar', unique: true })
   key: string;
 
   @Column({ type: 'uuid', unique: true, default: () => 'gen_random_uuid()' })
