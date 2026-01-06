@@ -1,5 +1,12 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Role } from '../enums/role.enum';
+import { ApiKey } from '../../iam/entities/api-key.entity';
 
 @Entity('users')
 export class User {
@@ -17,4 +24,8 @@ export class User {
 
   @Column({ type: 'varchar', enum: Role, default: Role.USER })
   role: Role;
+
+  @JoinTable()
+  @OneToMany(() => ApiKey, (apiKey) => apiKey.user)
+  apiKeys: ApiKey[];
 }

@@ -7,6 +7,7 @@ import { Reflector } from '@nestjs/core';
 import { AUTH_TYPE_KEY } from '../decorators/auth.decorator';
 import { AuthType } from '../enums/auth-type.enum';
 import { AccessTokenGuard } from './access-token.guard';
+import { ApiKeyGuard } from './api-key.guard';
 
 export class AuthenticationGuard implements CanActivate {
   private static readonly defaultAuthType = AuthType.BEARER;
@@ -18,9 +19,11 @@ export class AuthenticationGuard implements CanActivate {
   constructor(
     private readonly reflector: Reflector,
     private readonly accessTokenGuard: AccessTokenGuard,
+    private readonly apiKeyGuard: ApiKeyGuard,
   ) {
     this.authTypeGuardMap = {
       [AuthType.BEARER]: this.accessTokenGuard,
+      [AuthType.API_KEY]: this.apiKeyGuard,
       [AuthType.NONE]: { canActivate: () => true },
     };
   }
