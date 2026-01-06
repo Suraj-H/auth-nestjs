@@ -1,0 +1,620 @@
+{
+	"info": {
+		"_postman_id": "auth-nestjs-api-collection",
+		"name": "Auth NestJS API",
+		"description": "Complete API collection for Auth NestJS project with authentication (JWT, Session, Google OAuth, 2FA), users management, and coffees management. Base URL: http://localhost:3000",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "App",
+			"item": [
+				{
+					"name": "Hello",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/",
+							"host": ["{{baseUrl}}"],
+							"path": [""]
+						},
+						"description": "Simple hello endpoint to check if the server is running."
+					},
+					"response": []
+				}
+			],
+			"description": "Application root endpoints"
+		},
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Sign Up",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201 || pm.response.code === 200) {",
+									"    const jsonData = pm.response.json();",
+									"    if (jsonData.id) {",
+									"        pm.collectionVariables.set('userId', jsonData.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"Password123!\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/sign-up",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "sign-up"]
+						},
+						"description": "Sign up a new user. Returns user data. Password must be 8-32 characters, contain at least one uppercase letter, one lowercase letter, one number and one special character. Name must contain only letters (2-32 characters)."
+					},
+					"response": []
+				},
+				{
+					"name": "Sign In",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const jsonData = pm.response.json();",
+									"    if (jsonData.accessToken) {",
+									"        pm.collectionVariables.set('accessToken', jsonData.accessToken);",
+									"    }",
+									"    if (jsonData.refreshToken) {",
+									"        pm.collectionVariables.set('refreshToken', jsonData.refreshToken);",
+									"    }",
+									"    if (jsonData.user && jsonData.user.id) {",
+									"        pm.collectionVariables.set('userId', jsonData.user.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"Password123!\",\n  \"tfaCode\": \"123456\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/sign-in",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "sign-in"]
+						},
+						"description": "Sign in an existing user. Returns access token and refresh token. If 2FA is enabled, tfaCode (6-digit code) is required. Password must be 8-32 characters, contain at least one uppercase letter, one lowercase letter, one number and one special character."
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const jsonData = pm.response.json();",
+									"    if (jsonData.accessToken) {",
+									"        pm.collectionVariables.set('accessToken', jsonData.accessToken);",
+									"    }",
+									"    if (jsonData.refreshToken) {",
+									"        pm.collectionVariables.set('refreshToken', jsonData.refreshToken);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/refresh-token",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "refresh-token"]
+						},
+						"description": "Refresh access token using refresh token. Returns new access token and refresh token."
+					},
+					"response": []
+				},
+				{
+					"name": "Generate 2FA QR Code",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/auth/2fa/generate",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "2fa", "generate"]
+						},
+						"description": "Generate QR code for 2FA setup. Requires Bearer token authentication. Returns QR code image as file stream. Automatically enables 2FA for the authenticated user."
+					},
+					"response": []
+				}
+			],
+			"description": "JWT-based authentication endpoints"
+		},
+		{
+			"name": "Session Authentication",
+			"item": [
+				{
+					"name": "Session Sign In",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"Password123!\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/session/sign-in",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "session", "sign-in"]
+						},
+						"description": "Sign in using session-based authentication. Creates a session cookie. Password must be 8-32 characters, contain at least one uppercase letter, one lowercase letter, one number and one special character."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Current User (Session)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/auth/session/me",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "session", "me"]
+						},
+						"description": "Get current authenticated user information using session. Requires valid session cookie."
+					},
+					"response": []
+				}
+			],
+			"description": "Session-based authentication endpoints"
+		},
+		{
+			"name": "Google Authentication",
+			"item": [
+				{
+					"name": "Authenticate with Google",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const jsonData = pm.response.json();",
+									"    if (jsonData.accessToken) {",
+									"        pm.collectionVariables.set('accessToken', jsonData.accessToken);",
+									"    }",
+									"    if (jsonData.user && jsonData.user.id) {",
+									"        pm.collectionVariables.set('userId', jsonData.user.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"token\": \"google-id-token-here\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/social/google",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "social", "google"]
+						},
+						"description": "Authenticate using Google OAuth token. Returns access token and user data."
+					},
+					"response": []
+				}
+			],
+			"description": "Google OAuth authentication endpoints"
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Create User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201 || pm.response.code === 200) {",
+									"    const jsonData = pm.response.json();",
+									"    if (jsonData.id) {",
+									"        pm.collectionVariables.set('userId', jsonData.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Jane Doe\",\n  \"email\": \"jane.doe@example.com\",\n  \"password\": \"Password123!\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users",
+							"host": ["{{baseUrl}}"],
+							"path": ["users"]
+						},
+						"description": "Create a new user. Either email/password or googleId must be provided. Password must be 8-32 characters, contain at least one uppercase letter, one lowercase letter, one number and one special character. Name must contain only letters (2-32 characters)."
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users",
+							"host": ["{{baseUrl}}"],
+							"path": ["users"]
+						},
+						"description": "Get all users."
+					},
+					"response": []
+				},
+				{
+					"name": "Get User by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["users", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{userId}}",
+									"description": "User ID"
+								}
+							]
+						},
+						"description": "Get a user by ID."
+					},
+					"response": []
+				},
+				{
+					"name": "Update User",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Updated Name\",\n  \"email\": \"updated@example.com\",\n  \"password\": \"NewPassword123!\",\n  \"tfaSecret\": \"secret\",\n  \"isTfaEnabled\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["users", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{userId}}",
+									"description": "User ID"
+								}
+							]
+						},
+						"description": "Update a user. All fields are optional. Can update name, email, password, tfaSecret, and isTfaEnabled."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["users", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{userId}}",
+									"description": "User ID"
+								}
+							]
+						},
+						"description": "Delete a user by ID."
+					},
+					"response": []
+				}
+			],
+			"description": "User management endpoints"
+		},
+		{
+			"name": "Coffees",
+			"item": [
+				{
+					"name": "Create Coffee",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201 || pm.response.code === 200) {",
+									"    const jsonData = pm.response.json();",
+									"    if (jsonData.id) {",
+									"        pm.collectionVariables.set('coffeeId', jsonData.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}",
+								"description": "Can also use: ApiKey {{apiKey}}. Requires ADMIN role."
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/coffees",
+							"host": ["{{baseUrl}}"],
+							"path": ["coffees"]
+						},
+						"description": "Create a new coffee. Requires ADMIN role and authentication (Bearer token or API Key). Also requires OrganizationContributorPolicy."
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Coffees",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}",
+								"description": "Can also use: ApiKey {{apiKey}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/coffees",
+							"host": ["{{baseUrl}}"],
+							"path": ["coffees"]
+						},
+						"description": "Get all coffees. Requires authentication (Bearer token or API Key)."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Coffee by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}",
+								"description": "Can also use: ApiKey {{apiKey}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/coffees/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["coffees", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{coffeeId}}",
+									"description": "Coffee ID"
+								}
+							]
+						},
+						"description": "Get a coffee by ID. Requires authentication (Bearer token or API Key)."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Coffee",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}",
+								"description": "Can also use: ApiKey {{apiKey}}. Requires ADMIN role."
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/coffees/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["coffees", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{coffeeId}}",
+									"description": "Coffee ID"
+								}
+							]
+						},
+						"description": "Update a coffee. Requires ADMIN role and authentication (Bearer token or API Key)."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Coffee",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}",
+								"description": "Can also use: ApiKey {{apiKey}}. Requires ADMIN role."
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/coffees/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["coffees", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{coffeeId}}",
+									"description": "Coffee ID"
+								}
+							]
+						},
+						"description": "Delete a coffee. Requires ADMIN role and authentication (Bearer token or API Key)."
+					},
+					"response": []
+				}
+			],
+			"description": "Coffee management endpoints. All endpoints require authentication (Bearer token or API Key). Create, Update, and Delete require ADMIN role. To use API Key authentication, set Authorization header to: 'ApiKey <your-api-key>' instead of 'Bearer <token>'."
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:3000",
+			"type": "string",
+			"description": "Base URL for the API"
+		},
+		{
+			"key": "accessToken",
+			"value": "",
+			"type": "string",
+			"description": "JWT access token. Automatically set after sign-in or Google authentication."
+		},
+		{
+			"key": "refreshToken",
+			"value": "",
+			"type": "string",
+			"description": "JWT refresh token. Automatically set after sign-in."
+		},
+		{
+			"key": "userId",
+			"value": "",
+			"type": "string",
+			"description": "Current user ID. Automatically set after sign-up or sign-in."
+		},
+		{
+			"key": "coffeeId",
+			"value": "",
+			"type": "string",
+			"description": "Coffee ID. Set after creating a coffee."
+		},
+		{
+			"key": "apiKey",
+			"value": "",
+			"type": "string",
+			"description": "API Key for authentication. Use format 'ApiKey <key>' in Authorization header. Can be used instead of Bearer token for coffees endpoints."
+		}
+	]
+}
