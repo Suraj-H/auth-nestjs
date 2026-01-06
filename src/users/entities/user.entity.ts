@@ -5,21 +5,21 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Role } from '../enums/role.enum';
 import { ApiKey } from '../../iam/entities/api-key.entity';
+import { Role } from '../enums/role.enum';
 
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ nullable: true })
   name: string;
 
   @Column({ unique: true })
   email: string;
 
-  @Column({ select: false })
+  @Column({ select: false, nullable: true })
   password: string;
 
   @Column({ type: 'varchar', enum: Role, default: Role.USER })
@@ -28,4 +28,7 @@ export class User {
   @JoinTable()
   @OneToMany(() => ApiKey, (apiKey) => apiKey.user)
   apiKeys: ApiKey[];
+
+  @Column({ nullable: true })
+  googleId: string;
 }

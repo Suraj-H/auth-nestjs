@@ -10,6 +10,8 @@ import { AuthenticationService } from './authentication/authentication.service';
 import { AccessTokenGuard } from './authentication/guards/access-token.guard';
 import { ApiKeyGuard } from './authentication/guards/api-key.guard';
 import { AuthenticationGuard } from './authentication/guards/authentication.guard';
+import { GoogleAuthenticationController } from './authentication/social/google-authentication.controller';
+import { GoogleAuthenticationService } from './authentication/social/google-authentication.service';
 import { RefreshTokenIdsStorage } from './authentication/storage/refresh-token-ids.storage';
 import { PoliciesGuard } from './authorization/guards/policies.guard';
 import { RoleGuard } from './authorization/guards/role.guard';
@@ -52,7 +54,8 @@ import { HashingService } from './hashing/hashing.service';
     AuthenticationService,
     RefreshTokenIdsStorage,
     ApiKeyService,
+    GoogleAuthenticationService,
   ],
-  controllers: [AuthenticationController],
+  controllers: [AuthenticationController, GoogleAuthenticationController],
 })
 export class IamModule {}

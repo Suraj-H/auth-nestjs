@@ -1,20 +1,23 @@
 import {
   IsEmail,
-  IsNotEmpty,
+  IsOptional,
   IsString,
   Matches,
   MaxLength,
   MinLength,
+  ValidateIf,
 } from 'class-validator';
 
 export class CreateUserDto {
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
+  @ValidateIf((object: CreateUserDto) => !object.googleId)
   @IsEmail()
-  readonly email: string;
+  readonly email?: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
+  @ValidateIf((object: CreateUserDto) => !object.googleId && !!object.email)
   @MinLength(8)
   @MaxLength(32)
   @Matches(
@@ -24,14 +27,20 @@ export class CreateUserDto {
         'password must contain at least one uppercase letter, one lowercase letter, one number and one special character',
     },
   )
-  readonly password: string;
+  readonly password?: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
+  @ValidateIf((object: CreateUserDto) => !object.googleId)
   @MinLength(2)
   @MaxLength(32)
   @Matches(/^[a-zA-Z]+$/, {
     message: 'name must contain only letters',
   })
-  readonly name: string;
+  readonly name?: string;
+
+  @IsString()
+  @IsOptional()
+  @ValidateIf((object: CreateUserDto) => !object.email)
+  readonly googleId?: string;
 }

@@ -64,7 +64,7 @@ export class AuthenticationService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    return await this._generateTokens(user);
+    return await this.generateTokens(user);
   }
 
   async refreshToken(refreshTokenDto: RefreshTokenDto) {
@@ -88,7 +88,7 @@ export class AuthenticationService {
 
       await this.refreshTokenIdsStorage.invalidate(sub);
 
-      return this._generateTokens(user);
+      return this.generateTokens(user);
     } catch (error) {
       if (error instanceof InvalidatedRefreshTokenError) {
         throw new UnauthorizedException('Access denied');
@@ -100,7 +100,7 @@ export class AuthenticationService {
     }
   }
 
-  private async _generateTokens(
+  async generateTokens(
     user: User,
   ): Promise<{ accessToken: string; refreshToken: string }> {
     const refreshTokenId = randomUUID();

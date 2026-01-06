@@ -12,13 +12,17 @@ export class UsersService {
     private readonly usersRepository: Repository<User>,
   ) {}
 
-  async create(createUserDto: CreateUserDto) {
+  async create(createUserDto: CreateUserDto): Promise<User> {
     const user = this.usersRepository.create(createUserDto);
     return this.usersRepository.save(user);
   }
 
   async findByEmail(email: string) {
-    return this.usersRepository.findOne({ where: { email } });
+    return this.usersRepository.findOneBy({ email });
+  }
+
+  async findByGoogleId(googleId: string): Promise<User | null> {
+    return await this.usersRepository.findOneBy({ googleId });
   }
 
   findAll() {
