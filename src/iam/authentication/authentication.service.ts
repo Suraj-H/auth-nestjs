@@ -16,7 +16,7 @@ import { ActiveUserData } from '../interfaces/active-user-data.interface';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { SignInDto } from './dto/sign-in.dto';
 import { SignUpDto } from './dto/sign-up.dto';
-import { RefreshTokenIdsStorage } from './refresh-token-ids.storage/refresh-token-ids.storage';
+import { RefreshTokenIdsStorage } from './storage/refresh-token-ids.storage';
 import {
   ExpiredRefreshTokenError,
   InvalidatedRefreshTokenError,
@@ -108,7 +108,7 @@ export class AuthenticationService {
       this._signToken<Partial<ActiveUserData>>(
         user.id,
         this.jwtConfiguration.accessTokenTtl,
-        { email: user.email },
+        { email: user.email, role: user.role },
       ),
       this._signToken(user.id, this.jwtConfiguration.refreshTokenTtl, {
         refreshTokenId,

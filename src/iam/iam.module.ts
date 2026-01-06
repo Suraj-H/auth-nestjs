@@ -7,7 +7,11 @@ import { AuthenticationController } from './authentication/authentication.contro
 import { AuthenticationService } from './authentication/authentication.service';
 import { AccessTokenGuard } from './authentication/guards/access-token.guard';
 import { AuthenticationGuard } from './authentication/guards/authentication.guard';
-import { RefreshTokenIdsStorage } from './authentication/refresh-token-ids.storage/refresh-token-ids.storage';
+import { RefreshTokenIdsStorage } from './authentication/storage/refresh-token-ids.storage';
+import { PoliciesGuard } from './authorization/guards/policies.guard';
+import { RoleGuard } from './authorization/guards/role.guard';
+import { OrganizationContributorPolicyHandler } from './authorization/policies/handlers/organization-contributor-policy.handler';
+import { PolicyHandlerStorage } from './authorization/policies/storage/policy-handler.storage';
 import jwtConfig from './config/jwt.config';
 import { BcryptService } from './hashing/bcrypt.service';
 import { HashingService } from './hashing/hashing.service';
@@ -27,6 +31,16 @@ import { HashingService } from './hashing/hashing.service';
       provide: APP_GUARD,
       useClass: AuthenticationGuard,
     },
+    {
+      provide: APP_GUARD,
+      useClass: RoleGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: PoliciesGuard,
+    },
+    PolicyHandlerStorage,
+    OrganizationContributorPolicyHandler,
     AccessTokenGuard,
     AuthenticationService,
     RefreshTokenIdsStorage,
